@@ -1,0 +1,31 @@
+---
+
+services:
+  app:
+    image: catchbook:local
+    container_name: catchbook
+    ports:
+      - "10000:10000"
+    depends_on:
+      - db
+    networks:
+      - ps
+
+  db:
+    image: mysql:8
+    container_name: catchbook-db
+    volumes:
+      - ./data/database:/var/lib/mysql
+    environment:
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "13306:3306"
+    networks:
+      - ps
+
+networks:
+  ps:
