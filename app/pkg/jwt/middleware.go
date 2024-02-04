@@ -3,6 +3,7 @@ package jwt
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"strings"
 )
 
@@ -10,13 +11,17 @@ func Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := extractToken(c)
 		if err != nil {
-			fmt.Println(token)
-			c.Status(403)
-			c.Abort()
+			unauthorised(c)
 			return
 		}
+		fmt.Println("token:", string(token))
 		c.Next()
 	}
+}
+
+func unauthorised(c *gin.Context) {
+	c.JSON(http.StatusForbidden, gin.H{"message": "forbidden"})
+	c.Abort()
 }
 
 func extractToken(c *gin.Context) ([]byte, error) {

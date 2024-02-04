@@ -34,8 +34,9 @@ func NewHandler(
 }
 
 func (h *Handler) Register(r *gin.Engine) {
-	r.Use(jwt.Middleware())
-	r.GET("/api/user/:id", h.profile)
-	r.GET("/api/users", h.list)
-	r.POST("/api/user/create", h.create)
+	authorized := r.Group("/api/user/")
+	authorized.Use(jwt.Middleware())
+	authorized.GET("/:id", h.profile)
+	authorized.GET("/list", h.list)
+	authorized.POST("/create", h.create)
 }

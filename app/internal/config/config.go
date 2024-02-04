@@ -32,6 +32,10 @@ func (c *Config) ListenAddress() string {
 	return fmt.Sprintf("%s:%d", c.BindIp, c.ListenPort)
 }
 
+func (c *Config) GetSecret() string {
+	return "SECRET KEY"
+}
+
 var once sync.Once
 var cfg *Config
 

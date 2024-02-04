@@ -18,3 +18,11 @@ type UserDto struct {
 	Lastname  string
 	CreatedAt string
 }
+
+func (u User) GetUserId() string {
+	return u.Id
+}
+
+func (u User) GetEmail() string {
+	return u.Email
+}

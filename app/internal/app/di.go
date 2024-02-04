@@ -3,6 +3,7 @@ package app
 import (
 	"catchbook/internal/config"
 	"catchbook/internal/handlers"
+	ah "catchbook/internal/handlers/auth"
 	fh "catchbook/internal/handlers/fish"
 	mh "catchbook/internal/handlers/mainpage"
 	uh "catchbook/internal/handlers/user"
@@ -10,8 +11,12 @@ import (
 	ur "catchbook/internal/repository/user"
 	fs "catchbook/internal/service/fish"
 	us "catchbook/internal/service/user"
+	aucase "catchbook/internal/usecase/auth"
 	uucase "catchbook/internal/usecase/user"
+	"catchbook/pkg/cache"
+	"catchbook/pkg/cache/freecache"
 	"catchbook/pkg/db"
+	"catchbook/pkg/jwt"
 	"context"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
@@ -23,6 +28,7 @@ type Container struct {
 	service struct {
 		user us.ServiceInterface
 		fish fs.ServiceInterface
+		jwt  jwt.ServiceInterface
 	}
 
 	useCase struct {
@@ -30,6 +36,9 @@ type Container struct {
 			create uucase.CreateUserUseCaseInterface
 			list   uucase.ListUserUseCaseInterface
 			fetch  uucase.FetchUserUseCaseInterface
+		}
+		auth struct {
+			authorize aucase.AuthorizeUseCaseInterface
 		}
 	}
 
@@ -42,12 +51,14 @@ type Container struct {
 		user handlers.HandlerInterface
 		main handlers.HandlerInterface
 		fish handlers.HandlerInterface
+		auth handlers.HandlerInterface
 	}
 
 	db     *sql.DB
 	config *config.Config
 	logger *slog.Logger
 	ctx    context.Context
+	cache  cache.CacheInterface
 }
 
 func NewContainer(ctx context.Context) *Container {
@@ -77,6 +88,9 @@ func (c *Container) GetLogger() *slog.Logger {
 	return c.logger
 }
 
+// --------
+// Services
+
 func (c *Container) GetUserService() us.ServiceInterface {
 	if c.service.user == nil {
 		c.service.user = us.NewService(c.GetUserRepository())
@@ -91,6 +105,16 @@ func (c *Container) GetFishService() fs.ServiceInterface {
 	return c.service.fish
 }
 
+func (c *Container) GetJwtService() jwt.ServiceInterface {
+	if c.service.jwt == nil {
+		c.service.jwt = jwt.NewService(c.logger, c.GetCache())
+	}
+	return c.service.jwt
+}
+
+// ------------
+// Repositories
+
 func (c *Container) GetUserRepository() us.RepositoryInterface {
 	if c.repository.user == nil {
 		c.repository.user = ur.NewUserRepository(c.GetDatabaseConnection())
@@ -104,6 +128,9 @@ func (c *Container) GetFishRepository() fs.RepositoryInterface {
 	}
 	return c.repository.fish
 }
+
+// ------------
+// Use Cases
 
 func (c *Container) GetUserCreateUseCase() uucase.CreateUserUseCaseInterface {
 	if c.useCase.user.create == nil {
@@ -125,6 +152,16 @@ func (c *Container) GetUserListUseCase() uucase.ListUserUseCaseInterface {
 	return c.useCase.user.list
 }
 
+func (c *Container) GetAuthUseCase() aucase.AuthorizeUseCaseInterface {
+	if c.useCase.auth.authorize == nil {
+		c.useCase.auth.authorize = aucase.NewAuthorizeUseCase(c.GetUserService(), c.GetJwtService())
+	}
+	return c.useCase.auth.authorize
+}
+
+// ------------
+// Handlers
+
 func (c *Container) getUserHandler() handlers.HandlerInterface {
 	if c.handler.user == nil {
 		c.handler.user = uh.NewHandler(
@@ -145,6 +182,13 @@ func (c *Container) getFishHandler() handlers.HandlerInterface {
 	return c.handler.fish
 }
 
+func (c *Container) getAuthHandler() handlers.HandlerInterface {
+	if c.handler.auth == nil {
+		c.handler.auth = ah.NewHandler(c.GetAuthUseCase(), c.GetConfig(), c.GetLogger())
+	}
+	return c.handler.auth
+}
+
 func (c *Container) getMainHandler() handlers.HandlerInterface {
 	if c.handler.main == nil {
 		c.handler.main = mh.NewHandler(c.GetConfig(), c.GetLogger())
@@ -159,9 +203,19 @@ func (c *Container) Handlers() []handlers.HandlerInterface {
 	}
 }
 
+// ------------
+// Adapters
+
 func (c *Container) GetDatabaseConnection() *sql.DB {
 	if c.db == nil {
 		c.db = db.NewMysqlClient(c.ctx, c.GetConfig().DatabaseDsn)
 	}
 	return c.db
+}
+
+func (c *Container) GetCache() cache.CacheInterface {
+	if c.cache == nil {
+		c.cache = freecache.NewCache(1024)
+	}
+	return c.cache
 }
