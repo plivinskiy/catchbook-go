@@ -17,7 +17,7 @@ func (r *Repository) FetchOneByUsernameAndPassword(ctx context.Context, username
 	}
 	var u model.User
 	result.Next()
-	err = result.Scan(&u.Id, &u.Status, &u.Email, &u.Username, &u.Firstname, &u.Lastname, &u.CreatedAt)
+	err = result.Scan(&u.Id, &u.Status, &u.Email, &u.Username, &u.Password, &u.Firstname, &u.Lastname, &u.CreatedAt)
 	if err != nil {
 		return nil, err
 	}

@@ -5,6 +5,7 @@ type User struct {
 	Status    int
 	Email     string
 	Username  string
+	Password  string
 	Firstname string
 	Lastname  string
 	CreatedAt string

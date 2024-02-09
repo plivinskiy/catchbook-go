@@ -6,7 +6,9 @@ import (
 )
 
 func (h *Handler) token(c *gin.Context) {
-	user, err := h.authUseCase.Authorize(c.Param("password"), c.Param("password"))
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+	user, err := h.authUseCase.Authorize(username, password)
 	if err != nil {
 		h.logger.Error(err.Error())
 		c.JSON(http.StatusForbidden, gin.H{"message": "login or password wrong"})

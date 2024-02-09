@@ -23,5 +23,5 @@ func NewHandler(authUseCase auth.AuthorizeUseCaseInterface, cfg *config.Config, 
 }
 
 func (h *Handler) Register(r *gin.Engine) {
-	r.POST("/token", h.token)
+	r.POST("/auth/token", h.token)
 }

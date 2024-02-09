@@ -199,7 +199,7 @@ func (c *Container) getMainHandler() handlers.HandlerInterface {
 func (c *Container) Handlers() []handlers.HandlerInterface {
 	return []handlers.HandlerInterface{
 		c.getUserHandler(),
-		c.getMainHandler(),
+		c.getAuthHandler(),
 	}
 }
 
