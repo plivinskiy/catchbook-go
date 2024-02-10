@@ -7,7 +7,7 @@ import (
 
 func (h *Handler) profile(c *gin.Context) {
 	id := c.Param("id")
-	u, err := h.fetchUserUseCase.Fetch(id)
+	u, err := h.fetchUserUseCase.FetchUser(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "not found"})
 		return

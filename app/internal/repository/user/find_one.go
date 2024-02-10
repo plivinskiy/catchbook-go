@@ -17,7 +17,7 @@ func (r *Repository) FindOneById(ctx context.Context, id string) (*model.User, e
 	}
 	var u model.User
 	result.Next()
-	err = result.Scan(&u.Id, &u.Status, &u.Email, &u.Username, &u.Firstname, &u.Lastname, &u.CreatedAt)
+	err = result.Scan(&u.Id, &u.Status, &u.Email, &u.Username, &u.Password, &u.Firstname, &u.Lastname, &u.CreatedAt)
 	if err != nil {
 		return nil, err
 	}

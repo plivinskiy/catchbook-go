@@ -14,7 +14,7 @@ func (h *Handler) create(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "wrong parameters"})
 		return
 	}
-	u, err := h.createUserUseCase.Create(dto)
+	u, err := h.createUserUseCase.CreateUser(dto)
 	if err != nil {
 		h.logger.Error("cannot save user: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "cannot save user"})

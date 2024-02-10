@@ -3,7 +3,7 @@ package user
 import "catchbook/internal/model"
 
 type ListUserUseCaseInterface interface {
-	List() ([]*model.User, error)
+	ListUsers() ([]*model.User, error)
 }
 
 type ListUserServiceInterface interface {
@@ -20,7 +20,7 @@ func NewUseCaseListUser(service ListUserServiceInterface) ListUserUseCaseInterfa
 	}
 }
 
-func (c ListUserUseCase) List() ([]*model.User, error) {
+func (c ListUserUseCase) ListUsers() ([]*model.User, error) {
 	list, err := c.service.List()
 	if err != nil {
 		return nil, err

@@ -24,8 +24,8 @@ type UserClaims struct {
 }
 
 type ServiceInterface interface {
-	GenerateAccessToken(u UserInterface, secret string) ([]byte, error)
-	RefreshToken(rt RToken, secret string) ([]byte, error)
+	GenerateAccessToken(u UserInterface, secret string) (map[string]string, error)
+	RefreshToken(rt RToken, secret string) (map[string]string, error)
 }
 
 type Service struct {
@@ -37,7 +37,7 @@ func NewService(l *slog.Logger, c cache.CacheInterface) ServiceInterface {
 	return &Service{logger: l, cache: c}
 }
 
-func (s *Service) GenerateAccessToken(u UserInterface, secret string) ([]byte, error) {
+func (s *Service) GenerateAccessToken(u UserInterface, secret string) (map[string]string, error) {
 	signer, err := jwt.NewSignerHS(jwt.HS256, []byte(secret))
 	if err != nil {
 		return nil, err
@@ -54,10 +54,10 @@ func (s *Service) GenerateAccessToken(u UserInterface, secret string) ([]byte, e
 		return nil, err
 	}
 	err = s.cache.Set([]byte(refreshTokenUuid.String()), userBytes, 0)
-	result, err := json.Marshal(map[string]string{
+	result := map[string]string{
 		"token":         token.String(),
 		"refresh_token": refreshTokenUuid.String(),
-	})
+	}
 	return result, nil
 }
 
@@ -72,7 +72,7 @@ func (s *Service) claims(u UserInterface) UserClaims {
 	}
 }
 
-func (s *Service) RefreshToken(rt RToken, secret string) ([]byte, error) {
+func (s *Service) RefreshToken(rt RToken, secret string) (map[string]string, error) {
 	defer s.cache.Del([]byte(rt.Token))
 	userBytes, err := s.cache.Get([]byte(rt.Token))
 	if err != nil {

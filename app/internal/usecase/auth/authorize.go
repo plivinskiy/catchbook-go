@@ -9,7 +9,7 @@ import (
 
 type AuthorizeUseCaseInterface interface {
 	Authorize(username, password string) (*model.User, error)
-	Token(user *model.User) ([]byte, error)
+	Token(user *model.User) (map[string]string, error)
 }
 
 type AuthorizeUseCase struct {
@@ -37,7 +37,7 @@ func (c AuthorizeUseCase) Authorize(username, password string) (*model.User, err
 	return user, nil
 }
 
-func (c AuthorizeUseCase) Token(user *model.User) ([]byte, error) {
+func (c AuthorizeUseCase) Token(user *model.User) (map[string]string, error) {
 	token, err := c.js.GenerateAccessToken(user, c.cfg.GetSecret())
 	if err != nil {
 		return nil, err

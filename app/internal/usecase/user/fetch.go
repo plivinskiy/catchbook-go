@@ -3,7 +3,7 @@ package user
 import "catchbook/internal/model"
 
 type FetchUserUseCaseInterface interface {
-	Fetch(id string) (*model.User, error)
+	FetchUser(id string) (*model.User, error)
 }
 
 type ServiceInterface interface {
@@ -20,7 +20,7 @@ func NewUseCaseFetchUser(service ServiceInterface) FetchUserUseCaseInterface {
 	}
 }
 
-func (r FetchUserUseCase) Fetch(id string) (*model.User, error) {
+func (r FetchUserUseCase) FetchUser(id string) (*model.User, error) {
 	user, err := r.service.GetUser(id)
 	if err != nil {
 		return nil, err

@@ -9,9 +9,9 @@ func (r *Repository) Create(ctx context.Context, id string, dto model.UserDto) (
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	q := `
-		INSERT INTO user (id,status,email,username,firstname,lastname,created_at) VALUES (?,?,?,?,?,?,NOW())
+		INSERT INTO user (id,status,email,username,password,firstname,lastname,created_at) VALUES (?,?,?,?,?,?,?,NOW())
 	`
-	insert, err := r.db.Query(q, id, dto.Status, dto.Email, dto.Username, dto.Firstname, dto.Lastname)
+	insert, err := r.db.Query(q, id, dto.Status, dto.Email, dto.Username, dto.Password, dto.Firstname, dto.Lastname)
 	if err != nil {
 		return nil, err
 	}
