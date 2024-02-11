@@ -12,13 +12,13 @@ type User struct {
 }
 
 type UserDto struct {
-	Status    int
-	Email     string
-	Password  string
-	Username  string
-	Firstname string
-	Lastname  string
-	CreatedAt string
+	Status    int    `validate:"required"`
+	Email     string `validate:"required"`
+	Password  string `validate:"required"`
+	Username  string `validate:"required"`
+	Firstname string `validate:"required"`
+	Lastname  string `validate:"required"`
+	CreatedAt string `validate:"required"`
 }
 
 func (u User) GetUserId() string {

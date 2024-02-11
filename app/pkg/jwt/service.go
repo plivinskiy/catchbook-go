@@ -18,14 +18,19 @@ type RToken struct {
 	Token string `json:"refresh_token"`
 }
 
+type TokenResponse struct {
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
 type UserClaims struct {
 	jwt.RegisteredClaims
 	Email string
 }
 
 type ServiceInterface interface {
-	GenerateAccessToken(u UserInterface, secret string) (map[string]string, error)
-	RefreshToken(rt RToken, secret string) (map[string]string, error)
+	GenerateAccessToken(u UserInterface, secret string) (*TokenResponse, error)
+	RefreshToken(rt RToken, secret string) (*TokenResponse, error)
 }
 
 type Service struct {
@@ -37,7 +42,7 @@ func NewService(l *slog.Logger, c cache.CacheInterface) ServiceInterface {
 	return &Service{logger: l, cache: c}
 }
 
-func (s *Service) GenerateAccessToken(u UserInterface, secret string) (map[string]string, error) {
+func (s *Service) GenerateAccessToken(u UserInterface, secret string) (*TokenResponse, error) {
 	signer, err := jwt.NewSignerHS(jwt.HS256, []byte(secret))
 	if err != nil {
 		return nil, err
@@ -54,9 +59,9 @@ func (s *Service) GenerateAccessToken(u UserInterface, secret string) (map[strin
 		return nil, err
 	}
 	err = s.cache.Set([]byte(refreshTokenUuid.String()), userBytes, 0)
-	result := map[string]string{
-		"token":         token.String(),
-		"refresh_token": refreshTokenUuid.String(),
+	result := &TokenResponse{
+		Token:        token.String(),
+		RefreshToken: refreshTokenUuid.String(),
 	}
 	return result, nil
 }
@@ -72,7 +77,7 @@ func (s *Service) claims(u UserInterface) UserClaims {
 	}
 }
 
-func (s *Service) RefreshToken(rt RToken, secret string) (map[string]string, error) {
+func (s *Service) RefreshToken(rt RToken, secret string) (*TokenResponse, error) {
 	defer s.cache.Del([]byte(rt.Token))
 	userBytes, err := s.cache.Get([]byte(rt.Token))
 	if err != nil {
