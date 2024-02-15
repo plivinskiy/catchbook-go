@@ -15,6 +15,9 @@ func (r *Repository) FetchAll(ctx context.Context) ([]*model.User, error) {
 	}
 	result, err := stmt.Query()
 	defer result.Close()
+	if err != nil {
+		return nil, fmt.Errorf("failed to query: %w", err)
+	}
 	var users []*model.User
 	for result.Next() {
 		var u model.User

@@ -15,6 +15,7 @@ func (r *Repository) FetchOneByUsernameAndPassword(ctx context.Context, username
 	}
 
 	result, err := stmt.Query(username, password)
+	defer result.Close()
 	if err != nil {
 		return nil, fmt.Errorf("failed to query: %w", err)
 	}
