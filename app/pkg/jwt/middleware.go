@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Middleware https://github.com/theartofdevel/notes_system/blob/main/api_service/app/pkg/jwt/middleware.go
 func Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := extractToken(c)
