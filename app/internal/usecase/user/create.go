@@ -25,10 +25,10 @@ func NewUseCaseCreateUser(s CreateUserServiceInterface) CreateUserUseCaseInterfa
 
 var validate *validator.Validate
 
-func (c *CreateUserUseCase) CreateUser(dto model.UserDto) (user *model.User, err error) {
+func (c *CreateUserUseCase) CreateUser(dto model.UserDto) (u *model.User, err error) {
 	//validate = validator.New(validator.WithRequiredStructEnabled())
 	//err := validate.Struct(dto)
-	user, err = c.service.Create(dto)
+	u, err = c.service.Create(dto)
 	if err != nil {
 		return
 	}
