@@ -1,16 +1,34 @@
 package jwt
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/cristalhq/jwt/v3"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 )
 
-func Middleware() gin.HandlerFunc {
+func Middleware(secret []byte) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := extractToken(c)
 		if err != nil {
+			unauthorised(c)
+			return
+		}
+		verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
+		if err != nil {
+			unauthorised(c)
+			return
+		}
+		newToken, err := jwt.ParseAndVerify(token, verifier)
+		if err != nil {
+			unauthorised(c)
+			return
+		}
+		var newClaims jwt.RegisteredClaims
+		errClaims := json.Unmarshal(newToken.RawClaims(), &newClaims)
+		if errClaims != nil {
 			unauthorised(c)
 			return
 		}

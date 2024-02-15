@@ -29,8 +29,8 @@ type UserClaims struct {
 }
 
 type ServiceInterface interface {
-	GenerateAccessToken(u UserInterface, secret string) (*TokenResponse, error)
-	RefreshToken(rt RToken, secret string) (*TokenResponse, error)
+	GenerateAccessToken(u UserInterface, secret []byte) (*TokenResponse, error)
+	RefreshToken(rt RToken, secret []byte) (*TokenResponse, error)
 }
 
 type Service struct {
@@ -42,8 +42,8 @@ func NewService(l *slog.Logger, c cache.CacheInterface) ServiceInterface {
 	return &Service{logger: l, cache: c}
 }
 
-func (s *Service) GenerateAccessToken(u UserInterface, secret string) (*TokenResponse, error) {
-	signer, err := jwt.NewSignerHS(jwt.HS256, []byte(secret))
+func (s *Service) GenerateAccessToken(u UserInterface, secret []byte) (*TokenResponse, error) {
+	signer, err := jwt.NewSignerHS(jwt.HS256, secret)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (s *Service) claims(u UserInterface) UserClaims {
 	}
 }
 
-func (s *Service) RefreshToken(rt RToken, secret string) (*TokenResponse, error) {
+func (s *Service) RefreshToken(rt RToken, secret []byte) (*TokenResponse, error) {
 	defer s.cache.Del([]byte(rt.Token))
 	userBytes, err := s.cache.Get([]byte(rt.Token))
 	if err != nil {
