@@ -10,7 +10,7 @@ import (
 )
 
 type UserInterface interface {
-	GetUserId() string
+	GetUserId() uint
 	GetEmail() string
 }
 
@@ -24,8 +24,9 @@ type TokenResponse struct {
 }
 
 type UserClaims struct {
-	jwt.RegisteredClaims
-	Email string
+	ID        uint             `json:"id,omitempty"`
+	Email     string           `json:"email,omitempty"`
+	ExpiresAt *jwt.NumericDate `json:"expires_at,omitempty"`
 }
 
 type ServiceInterface interface {
@@ -68,12 +69,9 @@ func (s *Service) GenerateAccessToken(u UserInterface, secret []byte) (*TokenRes
 
 func (s *Service) claims(u UserInterface) UserClaims {
 	return UserClaims{
-		RegisteredClaims: jwt.RegisteredClaims{
-			ID:        u.GetUserId(),
-			Audience:  []string{"user"},
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 60)),
-		},
-		Email: u.GetEmail(),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 60)),
+		ID:        u.GetUserId(),
+		Email:     u.GetEmail(),
 	}
 }
 

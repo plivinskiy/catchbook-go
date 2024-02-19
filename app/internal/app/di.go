@@ -7,6 +7,7 @@ import (
 	fh "catchbook/internal/handlers/fish"
 	mh "catchbook/internal/handlers/mainpage"
 	uh "catchbook/internal/handlers/user"
+	"catchbook/internal/model"
 	fr "catchbook/internal/repository/fish"
 	ur "catchbook/internal/repository/user"
 	fs "catchbook/internal/service/fish"
@@ -18,8 +19,8 @@ import (
 	"catchbook/pkg/db"
 	"catchbook/pkg/jwt"
 	"context"
-	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
+	"gorm.io/gorm"
 	"log/slog"
 	"os"
 )
@@ -54,7 +55,7 @@ type Container struct {
 		auth handlers.HandlerInterface
 	}
 
-	db     *sql.DB
+	db     *gorm.DB
 	config *config.Config
 	logger *slog.Logger
 	ctx    context.Context
@@ -206,9 +207,10 @@ func (c *Container) Handlers() []handlers.HandlerInterface {
 // ------------
 // Adapters
 
-func (c *Container) GetDatabaseConnection() *sql.DB {
+func (c *Container) GetDatabaseConnection() *gorm.DB {
 	if c.db == nil {
 		c.db = db.NewMysqlClient(c.ctx, c.GetConfig().DatabaseDsn)
+		_ = c.db.AutoMigrate(&model.User{})
 	}
 	return c.db
 }

@@ -5,20 +5,20 @@ import (
 	"context"
 )
 
-func (r *Repository) Create(ctx context.Context, id string, dto model.UserDto) (*model.User, error) {
+func (r *Repository) Create(ctx context.Context, dto model.UserDto) (*model.User, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	q := `
-		INSERT INTO user (id,status,email,username,password,firstname,lastname,created_at) VALUES (?,?,?,?,?,?,?,NOW())
-	`
-	insert, err := r.db.Query(q, id, dto.Status, dto.Email, dto.Username, dto.Password, dto.Firstname, dto.Lastname)
-	if err != nil {
-		return nil, err
+	user := model.User{
+		Status:    dto.Status,
+		Email:     dto.Email,
+		Password:  dto.Password,
+		Username:  dto.Username,
+		Firstname: dto.Firstname,
+		Lastname:  dto.Lastname,
 	}
-	_ = insert.Close()
-	return &model.User{
-		Id:       id,
-		Email:    dto.Email,
-		Username: dto.Username,
-	}, nil
+	result := r.db.Create(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &user, nil
 }

@@ -6,10 +6,13 @@ require (
 	github.com/coocood/freecache v1.2.4
 	github.com/cristalhq/jwt/v3 v3.1.0
 	github.com/gin-gonic/gin v1.9.1
+	github.com/go-playground/validator/v10 v10.17.0
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/google/uuid v1.6.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/joho/godotenv v1.5.1
+	gorm.io/driver/mysql v1.5.4
+	gorm.io/gorm v1.25.7
 )
 
 require (
@@ -22,8 +25,9 @@ require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.17.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.6 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect

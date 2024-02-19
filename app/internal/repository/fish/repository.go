@@ -1,16 +1,16 @@
 package fish
 
 import (
-	"database/sql"
+	"gorm.io/gorm"
 	"sync"
 )
 
 type Repository struct {
 	mu sync.RWMutex
-	db *sql.DB
+	db *gorm.DB
 }
 
-func NewFishRepository(conn *sql.DB) *Repository {
+func NewFishRepository(conn *gorm.DB) *Repository {
 	return &Repository{
 		db: conn,
 	}

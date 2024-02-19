@@ -2,19 +2,13 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-type MysqlClient interface {
-	Exec(ctx context.Context, sql string, arguments ...interface{}) error
-	Query(ctx context.Context, sql string, args ...interface{}) (sql.Rows, error)
-	QueryRow(ctx context.Context, sql string, args ...interface{}) sql.Row
-	Begin(ctx context.Context) error
-}
-
-func NewMysqlClient(ctx context.Context, dsn string) *sql.DB {
-	db, err := sql.Open("mysql", dsn)
+func NewMysqlClient(ctx context.Context, dsn string) *gorm.DB {
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(fmt.Sprintf("cannot connect to database: %s", err.Error()))
 	}

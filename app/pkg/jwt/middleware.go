@@ -27,7 +27,7 @@ func Middleware(secret []byte) gin.HandlerFunc {
 			unauthorised(c)
 			return
 		}
-		var newClaims jwt.RegisteredClaims
+		var newClaims UserClaims
 		errClaims := json.Unmarshal(newToken.RawClaims(), &newClaims)
 		if errClaims != nil {
 			unauthorised(c)

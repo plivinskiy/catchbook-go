@@ -1,14 +1,13 @@
 package model
 
 type User struct {
-	Id        string
+	ID        uint `gorm:"primarykey"`
 	Status    int
 	Email     string
 	Username  string
 	Password  string
 	Firstname string
 	Lastname  string
-	CreatedAt string
 }
 
 type UserDto struct {
@@ -18,11 +17,10 @@ type UserDto struct {
 	Username  string `validate:"required"`
 	Firstname string `validate:"required"`
 	Lastname  string `validate:"required"`
-	CreatedAt string `validate:"required"`
 }
 
-func (u User) GetUserId() string {
-	return u.Id
+func (u User) GetUserId() uint {
+	return u.ID
 }
 
 func (u User) GetEmail() string {

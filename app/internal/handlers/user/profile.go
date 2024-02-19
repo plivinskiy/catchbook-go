@@ -5,9 +5,19 @@ import (
 	"net/http"
 )
 
+type Params struct {
+	ID uint `uri:"id"`
+}
+
 func (h *Handler) profile(c *gin.Context) {
-	id := c.Param("id")
-	u, err := h.fetchUserUseCase.FetchUser(id)
+	var p Params
+	err := c.ShouldBindUri(&p)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "wrong parameters"})
+		h.logger.Error(err.Error())
+		return
+	}
+	u, err := h.fetchUserUseCase.FetchUser(p.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "not found"})
 		h.logger.Error(err.Error())

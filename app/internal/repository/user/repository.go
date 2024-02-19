@@ -1,16 +1,16 @@
 package user
 
 import (
-	"database/sql"
+	"gorm.io/gorm"
 	"sync"
 )
 
 type Repository struct {
 	mu sync.RWMutex
-	db *sql.DB
+	db *gorm.DB
 }
 
-func NewUserRepository(conn *sql.DB) *Repository {
+func NewUserRepository(conn *gorm.DB) *Repository {
 	return &Repository{
 		db: conn,
 	}
