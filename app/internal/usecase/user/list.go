@@ -21,9 +21,9 @@ func NewUseCaseListUser(service ListUserServiceInterface) ListUserUseCaseInterfa
 }
 
 func (c ListUserUseCase) ListUsers() ([]*model.User, error) {
-	list, err := c.service.List()
+	l, err := c.service.List()
 	if err != nil {
 		return nil, err
 	}
-	return list, nil
+	return l, nil
 }

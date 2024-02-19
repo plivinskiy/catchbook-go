@@ -4,12 +4,11 @@ import (
 	"catchbook/internal/config"
 	"catchbook/internal/model"
 	"catchbook/pkg/jwt"
-	"fmt"
 )
 
 type AuthorizeUseCaseInterface interface {
 	Authorize(username, password string) (*model.User, error)
-	Token(user *model.User) (interface{}, error)
+	Token(u *model.User) (interface{}, error)
 }
 
 type AuthorizeUseCase struct {
@@ -30,17 +29,17 @@ func NewAuthorizeUseCase(us UserServiceInterface, js jwt.ServiceInterface) Autho
 }
 
 func (c AuthorizeUseCase) Authorize(username, password string) (*model.User, error) {
-	user, err := c.us.GetOneByUsernameAndEmail(username, password)
-	if err != nil {
-		return nil, fmt.Errorf("user not found by username %s: %v", username, err)
-	}
-	return user, nil
-}
-
-func (c AuthorizeUseCase) Token(user *model.User) (interface{}, error) {
-	token, err := c.js.GenerateAccessToken(user, c.cfg.GetSecret())
+	u, err := c.us.GetOneByUsernameAndEmail(username, password)
 	if err != nil {
 		return nil, err
 	}
-	return token, nil
+	return u, nil
+}
+
+func (c AuthorizeUseCase) Token(u *model.User) (interface{}, error) {
+	t, err := c.js.GenerateAccessToken(u, c.cfg.GetSecret())
+	if err != nil {
+		return nil, err
+	}
+	return t, nil
 }
