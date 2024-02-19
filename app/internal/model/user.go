@@ -1,13 +1,19 @@
 package model
 
+import (
+	"time"
+)
+
 type User struct {
 	ID        uint `gorm:"primarykey"`
-	Status    int
+	Status    int  `gorm:"default:0"`
 	Email     string
 	Username  string
 	Password  string
 	Firstname string
 	Lastname  string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type UserDto struct {
