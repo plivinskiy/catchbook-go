@@ -13,7 +13,8 @@ type V01 struct {
 func (v V01) Migrate() {
 	var u model.User
 	var f model.Fish
-	err := v.Db.Migrator().AutoMigrate(&u, &f)
+	var a model.Address
+	err := v.Db.Migrator().AutoMigrate(&u, &f, &a)
 	fmt.Println("migrate V01")
 	if err != nil {
 		fmt.Println(err.Error())

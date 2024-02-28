@@ -15,6 +15,13 @@ func (r *Repository) Create(ctx context.Context, dto model.UserDto) (*model.User
 		Username:  dto.Username,
 		Firstname: dto.Firstname,
 		Lastname:  dto.Lastname,
+		Address: model.Address{
+			City:     dto.Address.City,
+			Postcode: dto.Address.Postcode,
+			Country:  dto.Address.Country,
+			Street:   dto.Address.Street,
+			Number:   dto.Address.Number,
+		},
 	}
 	result := r.db.Create(&user)
 	if result.Error != nil {

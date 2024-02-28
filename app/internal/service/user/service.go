@@ -49,6 +49,7 @@ func (s *Service) GetUser(id uint) (*model.User, error) {
 
 func (s *Service) Create(dto model.UserDto) (*model.User, error) {
 	ctx := context.Background()
+	dto.Password = s.hashPassword(dto.Password)
 	user, err := s.ur.Create(ctx, dto)
 	if err != nil {
 		return nil, err
@@ -58,9 +59,17 @@ func (s *Service) Create(dto model.UserDto) (*model.User, error) {
 
 func (s *Service) GetOneByUsernameAndEmail(username, password string) (*model.User, error) {
 	ctx := context.Background()
+	password = s.hashPassword(password)
 	user, err := s.ur.FetchOneByUsernameAndPassword(ctx, username, password)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (s *Service) hashPassword(p string) string {
+	//argon2IDHash := NewArgon2idHash(1, 32, 64*1024, 32, 256)
+	//hash, _ := argon2IDHash.GenerateHash([]byte(p), nil)
+	//return string(hash.Hash)
+	return p
 }
