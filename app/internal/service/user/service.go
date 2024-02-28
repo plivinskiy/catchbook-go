@@ -3,6 +3,7 @@ package user
 import (
 	"catchbook/internal/model"
 	"context"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type ServiceInterface interface {
@@ -68,8 +69,7 @@ func (s *Service) GetOneByUsernameAndEmail(username, password string) (*model.Us
 }
 
 func (s *Service) hashPassword(p string) string {
-	//argon2IDHash := NewArgon2idHash(1, 32, 64*1024, 32, 256)
-	//hash, _ := argon2IDHash.GenerateHash([]byte(p), nil)
-	//return string(hash.Hash)
-	return p
+	// todo add salt
+	h, _ := bcrypt.GenerateFromPassword([]byte(p), 14)
+	return string(h)
 }
