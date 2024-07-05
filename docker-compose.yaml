@@ -1,16 +1,47 @@
 ---
 
 services:
-  app:
-    image: catchbook:local
-    container_name: catchbook
-    ports:
-      - "10000:10000"
+  backend1:
+    image: catchbook-backend:last
+    container_name: catchbook-backend-1
     depends_on:
       db:
         condition: service_healthy
     networks:
       - ps
+
+  backend2:
+    image: catchbook-backend:last
+    container_name: catchbook-backend-2
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ps
+
+  nginx:
+    build: services/server
+    ports:
+      - "10000:80"
+    networks:
+      - ps
+    depends_on:
+      - backend1
+      - backend2
+
+  frontend:
+    image: catchbook-frontend:last
+    container_name: catchbook-frontned
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ps
+    ports:
+      - "10001:80"
+    environment:
+      - NGINX_HOST=catchbook.develop
+      - NGINX_PORT=80
 
   db:
     image: mysql:8
@@ -31,7 +62,6 @@ services:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 10s
       retries: 10
-
 
 networks:
   ps:
